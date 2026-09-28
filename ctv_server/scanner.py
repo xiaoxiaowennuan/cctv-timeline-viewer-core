@@ -23,6 +23,10 @@ TIMESTAMP_PATTERNS = [
     re.compile(r"(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})"),  # 20260706002901
 ]
 
+# Xiaomi NAS exports encode an absolute start time independently of the
+# backup file's modification time and the host's local timezone.
+XIAOMI_TIMESTAMP = re.compile(r"[0-5]\dM[0-5]\dS_(\d{10})", re.IGNORECASE)
+
 
 def scan_directory(source_path: str, skip_paths: Optional[set[str]] = None) -> list[dict]:
     """Trova solo i file video supportati in una directory (ricorsivo)."""
@@ -34,6 +38,8 @@ def scan_directory(source_path: str, skip_paths: Optional[set[str]] = None) -> l
         directory = pending_directories.pop()
         with os.scandir(directory) as entries:
             for entry in entries:
+                if entry.name == "@eaDir":
+                    continue  # Synology thumbnails are not camera recordings.
                 if skip_paths and entry.path in skip_paths:
                     continue
                 if entry.is_dir(follow_symlinks=False):
@@ -68,6 +74,9 @@ def scan_directory(source_path: str, skip_paths: Optional[set[str]] = None) -> l
 def extract_timestamp(filename: str, filepath: str, tz_name: str = "UTC") -> Optional[float]:
     """Prova a estrarre il timestamp dal nome file via regex.
     Interpreta la data/ora nel timezone indicato e restituisce timestamp UTC."""
+    xiaomi = XIAOMI_TIMESTAMP.fullmatch(Path(filename).stem)
+    if xiaomi:
+        return float(xiaomi.group(1))
     for pattern in TIMESTAMP_PATTERNS:
         m = pattern.search(filename)
         if m:
