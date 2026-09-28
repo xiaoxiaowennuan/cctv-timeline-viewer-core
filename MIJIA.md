@@ -5,9 +5,9 @@ Synology `@eaDir` metadata directories. Original media remains read-only.
 
 Supported examples:
 
-- `camera-id/2026081007/12M56S_1786317176.mp4`: the Unix timestamp is the
+- `camera-id/2024010203/04M05S_1704135845.mp4`: the Unix timestamp is the
   absolute recording start, independent of backup modification times.
-- `camera-name/00_20260920162802_20260920163344.mp4`: the existing parser
+- `camera-name/00_20240102030405_20240102030905.mp4`: the existing parser
   reads the first date as the start time. Set the camera timezone to
   `Asia/Shanghai` for recordings whose filenames use Beijing time.
 
