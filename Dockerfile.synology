@@ -17,6 +17,7 @@ RUN pip install --index-url https://pypi.tuna.tsinghua.edu.cn/simple --no-cache-
 
 COPY ctv_server /usr/local/lib/python3.12/site-packages/ctv_server
 COPY ctv_web ./ctv_web
+RUN chmod -R a+rX /usr/local/lib/python3.12/site-packages/ctv_server /app/ctv_web
 RUN python -c "import ctv_server.main; from pathlib import Path; assert Path('/app/ctv_web/index.html').is_file()"
 
 RUN mkdir -p /root/.ctv /data
